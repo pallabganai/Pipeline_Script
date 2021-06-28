@@ -1,6 +1,13 @@
 pipeline {
     agent none
     stages {
+        stage('GitCheckout') {
+            steps {
+                echo 'GitCheckout successfully';
+                git 'https://github.com/pallabganai/Pipeline_Script.git';
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Build successfully';
