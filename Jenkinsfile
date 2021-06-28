@@ -1,37 +1,58 @@
 pipeline {
     agent none
     stages {
-	
-	stage('Non-Parallel Stage') {
-	    agent {
-                        label "master"
-                }
-        steps {
-                echo 'This stage will be executed first'
-                }
+        stage('Build') {
+            steps {
+                echo 'Build successfully';
+                sh 'chmod 755 *.sh';
+                sh './Build.sh';
+            }
         }
-
 	
-        stage('Run Tests') {
+        stage('Test') {
             parallel {
-                stage('Test On Windows') {
-                    agent {
+                stage('UnitTest') {
+/*                    agent {
                         label "Windows_Node"
-                    }
+                    }*/
                     steps {
-                        echo "Task1 on Agent"
+                        echo 'UnitTest passed successfully';
                     }
                     
                 }
-                stage('Test On Master') {
-                    agent {
+                stage('QualityGate') {
+/*                    agent {
                         label "master"
-                    }
+                    }*/
                     steps {
-						echo "Task1 on Master"
+						echo 'Quality Gate passed successfully';
 					}
                 }
             }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deployed successfully'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'This will always run'
+        }
+        success {
+            echo 'This will run only if successful'
+        }
+        failure {
+            echo 'This will run only if failed'
+        }
+        unstable {
+            echo 'This will run only if the run marked as unstable'
+        }
+        changed {
+            echo 'This will run only if the state of the pipeline changed'
         }
     }
 }
